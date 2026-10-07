@@ -1797,3 +1797,42 @@ body.home { overflow-x: clip; }
 }
 
 body.lb-lock { overflow: hidden; }
+
+/*==================================================
+        RESPONSIVE FIXES (v77) - tablets and phones
+==================================================*/
+
+/* small labels readable on tablets and phones */
+@media (max-width: 1080px) {
+    .brand small { font-size: 12px; }
+    .card .number { font-size: 12px; }
+}
+
+/* page-intro helix needs ~360px beside the intro text; hide it where there is no room */
+@media (max-width: 1080px) {
+    .page-intro-motif { display: none; }
+}
+
+/* Home hero: stack photo above text on tablets in portrait too */
+@media (max-width: 900px) {
+    .hero-grid { grid-template-columns: minmax(0, 1fr); }
+    .hero-grid > div:last-child { order: -1; }
+    .hero-photo-wrap { width: 320px; max-width: 100%; }
+    .hero-photo { width: 320px; height: 320px; max-width: 100%; }
+    .hero-molecule { display: none; }
+}
+
+@media (max-width: 720px) {
+    .hero-photo-wrap { width: 260px; }
+    .hero-photo { width: 260px; height: 260px; max-width: 260px; }
+
+    /* the two-row menu no longer stays pinned, so it doesn't cover a fifth of the screen */
+    .masthead { position: static; }
+    .nav { gap: 4px 18px; }
+    .nav a { padding: 6px 3px 4px; }   /* bigger tap area, e.g. "CV" */
+}
+
+/* any touch screen (phones, tablets, touch laptops): larger menu tap areas */
+@media (pointer: coarse) {
+    .nav a { padding: 6px 4px 4px; }
+}

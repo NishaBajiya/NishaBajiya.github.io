@@ -13,7 +13,7 @@
     var host = document.querySelector('.hero-molecule');
     var photo = document.querySelector('.hero-photo');
     if (!host || !photo || !window.THREE) return;
-    if (window.matchMedia('(max-width: 720px)').matches) return;
+    if (window.matchMedia('(max-width: 900px)').matches) return;   // stacked layout: no molecule
 
     var renderer;
     try {
@@ -111,20 +111,23 @@
     var maxX = 0;
     for (var s = 0; s <= 100; s++) maxX = Math.max(maxX, along(s / 100).x);
 
-    // On narrower windows the right margin is smaller: shrink the molecule
-    // (not below 80%) and pull the path in so nothing is cut at the screen edge.
+    // On narrower windows the right margin is smaller. Keep the whole canvas
+    // box inside the screen (so touch devices can't pan sideways): first pull
+    // the path towards the photo, then shrink the molecule; hide it if it
+    // would have to get too small.
     var pd = 0, px = 0, kx = 1;
     function resize() {
         pd = photo.offsetWidth;                 // photo diameter in px
         var rect = photo.getBoundingClientRect();
-        var room = window.innerWidth - (rect.left + rect.width / 2) - 8;
+        var room = window.innerWidth - (rect.left + rect.width / 2) - 4;
+        var half = pd * SIZE / 2;               // half the full-size canvas
         var scale = 1;
-        kx = Math.min(1, (room - VIS * pd * SIZE / 2) / (pd * maxX));
-        if (kx < 0.7) {
-            scale = 0.8;
-            kx = Math.min(1, (room - VIS * pd * SIZE * scale / 2) / (pd * maxX));
-        }
-        kx = Math.max(0.35, kx);
+        kx = (room - half * 0.8) / (pd * maxX); // try 80% size first
+        if (kx >= 1) { kx = 1; scale = Math.min(1, (room - pd * maxX) / half); }
+        else if (kx >= 0.45) { scale = 0.8; }
+        else { kx = 0.45; scale = (room - kx * pd * maxX) / half; }
+        if (scale < 0.4) { host.style.display = 'none'; return; }
+        host.style.display = '';
         px = Math.round(pd * SIZE * scale);
         renderer.setSize(px, px);
         host.style.width = host.style.height = px + 'px';
